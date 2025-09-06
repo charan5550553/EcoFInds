@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Home - EcoFinds{% endblock %}
+{% block content %}
+  <!-- Hero Section -->
+  <section class="text-center py-12">
+    <h1 class="text-4xl font-bold text-emerald-600 mb-4">Welcome to EcoFinds</h1>
+    <p class="text-lg text-gray-600 mb-6">Discover sustainable products and contribute to a greener planet 🌍</p>
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('signup') }}" class="bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600">Get Started</a>
+    {% endif %}
+  </section>
+
+  <!-- Filters -->
+  <form method="GET" class="bg-white rounded-xl shadow p-4 mb-6 flex flex-col md:flex-row gap-4 md:items-center">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search products..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500">
+    <select name="category" class="border border-gray-300 rounded-lg px-4 py-2">
+      <option value="">All categories</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+    <button class="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600">Apply</button>
+  </form>
+
+  <!-- Product Grid -->
+  <section class="mt-6">
+    <h2 class="text-2xl font-semibold mb-6">Latest Products</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for product in products %}
+        <div class="bg-white shadow-md rounded-xl p-4 hover:shadow-lg transition flex flex-col">
+          <h3 class="text-xl font-bold text-emerald-600">{{ product.name }}</h3>
+          <p class="text-gray-600 flex-1">{{ (product.description or '')[:120] }}{% if product.description and product.description|length > 120 %}...{% endif %}</p>
+          <p class="font-semibold mt-2">${{ '%.2f'|format(product.price) }}</p>
+          <div class="mt-3 flex gap-3">
+            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="text-emerald-600 hover:underline">View</a>
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+              <button class="text-emerald-600 hover:underline">Add to cart</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <p class="text-gray-600">No products found.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
