@@ -1,1 +1,1 @@
-# EcoFInds
+# EcoFinds
